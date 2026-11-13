@@ -9,6 +9,7 @@ export const en = {
   'common.back': 'Back',
   'common.cancel': 'Cancel',
   'common.clear': 'Clear',
+  'common.close': 'Close',
   'common.copy': 'Copy',
   'common.delete': 'Delete',
   'common.done': 'Done',

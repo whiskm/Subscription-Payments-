@@ -11,6 +11,7 @@ export const zh: Record<Key, string> = {
   'common.back': '返回',
   'common.cancel': '取消',
   'common.clear': '清除',
+  'common.close': '关闭',
   'common.copy': '复制',
   'common.delete': '删除',
   'common.done': '完成',

@@ -11,6 +11,7 @@ export const ru: Record<Key, string> = {
   'common.back': 'Назад',
   'common.cancel': 'Отмена',
   'common.clear': 'Сбросить',
+  'common.close': 'Закрыть',
   'common.copy': 'Скопировать',
   'common.delete': 'Удалить',
   'common.done': 'Готово',

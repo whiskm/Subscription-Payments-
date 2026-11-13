@@ -1,12 +1,14 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
+import { useApp } from '../state/app';
 import { Icon } from './icons';
 
 let openSheets = 0;
 
 /** A panel that slides up from the bottom on phones and sits centred on wide screens. */
 export function Sheet({ open, title, onClose, children }: { open: boolean; title: string; onClose: () => void; children: ReactNode }) {
+  const { t } = useApp();
   const ref = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const closeRef = useRef(onClose);
@@ -64,7 +66,7 @@ export function Sheet({ open, title, onClose, children }: { open: boolean; title
                 <h2 className="sheet__title" id={titleId}>
                   {title}
                 </h2>
-                <button className="icon-btn icon-btn--bare" onClick={onClose} aria-label="Close">
+                <button className="icon-btn icon-btn--bare" onClick={onClose} aria-label={t('common.close')}>
                   <Icon name="close" />
                 </button>
               </div>

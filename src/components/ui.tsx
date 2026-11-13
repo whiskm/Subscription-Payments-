@@ -1,4 +1,5 @@
 import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useApp } from '../state/app';
 import { Icon, type IconName } from './icons';
 
 export function Section({ title, aside, onAside, children }: { title: string; aside?: ReactNode; onAside?: () => void; children: ReactNode }) {
@@ -145,6 +146,7 @@ export function PasswordInput({
   autoComplete?: string;
   placeholder?: string;
 }) {
+  const { t } = useApp();
   const [shown, setShown] = useState(false);
   return (
     <div className="input-row">
@@ -160,7 +162,7 @@ export function PasswordInput({
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
       />
-      <IconButton bare icon={shown ? 'eyeOff' : 'eye'} label={shown ? 'Hide' : 'Show'} onClick={() => setShown((s) => !s)} />
+      <IconButton bare icon={shown ? 'eyeOff' : 'eye'} label={t(shown ? 'common.hide' : 'common.show')} onClick={() => setShown((s) => !s)} />
     </div>
   );
 }
