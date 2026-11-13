@@ -1,0 +1,44 @@
+name: Deploy to Cloudflare Pages
+
+# Optional. The simplest way is Cloudflare's own Git integration (see README).
+# This workflow is for deploying from GitHub Actions instead: it runs only when
+# the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets are set.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT: ${{ vars.CLOUDFLARE_PROJECT || 'subscription-payments' }}
+    steps:
+      - name: Check configuration
+        id: cfg
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice::Cloudflare secrets are not set, skipping deploy"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v5
+        if: steps.cfg.outputs.skip != 'true'
+      - uses: actions/setup-node@v5
+        if: steps.cfg.outputs.skip != 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - if: steps.cfg.outputs.skip != 'true'
+        run: npm ci && npm run build
+      - if: steps.cfg.outputs.skip != 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ env.PROJECT }} --branch=main
