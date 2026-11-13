@@ -273,7 +273,11 @@ a {
   font: 800 clamp(25px, 7.2vw, 34px) / 1.02 var(--font-display);
   letter-spacing: -0.04em;
   margin-top: 6px;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+}
+
+.top__title[data-long] {
+  font-size: clamp(19px, 6vw, 32px);
 }
 
 .top__actions {
@@ -1112,9 +1116,12 @@ input[type='date'].input {
 
 .seg__item {
   position: relative;
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   min-height: 36px;
-  padding: 0 10px;
+  padding: 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   border-radius: 10px;
   font-weight: 600;
   font-size: 13.5px;
@@ -1426,9 +1433,19 @@ input[type='date'].input {
   margin-top: 22px;
 }
 
+/* Spread across the ticket and shrink on narrow phones instead of pushing it wider. */
+.pass__punches .punches {
+  width: 100%;
+  justify-content: space-between;
+  gap: 2px;
+}
+
 .pass__punches .punch {
-  width: 9px;
-  height: 9px;
+  flex: 0 1 9px;
+  width: auto;
+  height: auto;
+  aspect-ratio: 1;
+  min-width: 0;
 }
 
 .pass__stamp {
@@ -1844,7 +1861,12 @@ input[type='date'].input {
 
 .wizard__foot {
   display: flex;
+  align-items: flex-end;
   gap: 10px;
+}
+
+.wizard__body {
+  overflow-x: clip;
 }
 
 .choice {
@@ -1961,4 +1983,31 @@ input[type='date'].input {
 
 .rot90 {
   transform: rotate(90deg);
+}
+
+/* The smallest phones (320px wide). */
+@media (max-width: 350px) {
+  .seg__item {
+    font-size: 12.5px;
+    padding: 0 3px;
+    letter-spacing: -0.01em;
+  }
+  .ticket {
+    --stub: 74px;
+  }
+  .ticket__main {
+    column-gap: 9px;
+  }
+  .mark {
+    --size: 36px;
+  }
+  .pass__top {
+    padding: 18px 18px 20px;
+  }
+  .pass__stub {
+    padding: 0 18px;
+  }
+  .pass__price {
+    font-size: 21px;
+  }
 }

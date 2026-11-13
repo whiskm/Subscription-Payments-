@@ -1,4 +1,7 @@
+import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
+import { backupDue } from '../src/lib/autobackup';
+import { defaultSettings } from '../src/lib/settings';
 import { cycleProgress, markPaid, monthlyCost, occurrences, rollForward, urgency } from '../src/lib/schedule';
 import { monthFlow, totals } from '../src/lib/stats';
 import type { Subscription } from '../src/lib/types';
@@ -90,5 +93,25 @@ describe('stats', () => {
     const f = monthFlow([sub({ payments: [{ date: '2026-11-02', amount: 100, currency: 'RUB' }] })], money, '2026-11-13');
     expect(f.paid).toBe(100);
     expect(f.upcoming).toBe(300);
+  });
+});
+
+describe('backup reminders', () => {
+  const base = { ...defaultSettings('en'), backup: { intervalDays: 3, encrypt: false, lastAt: null as string | null, keep: 5 } };
+  const now = Date.parse('2026-11-13T12:00:00Z');
+  const created = (daysAgo: number) => [{ createdAt: new Date(now - daysAgo * 86_400_000).toISOString() }];
+
+  it('does not nag on the day the first subscription is added', () => {
+    expect(backupDue(base, created(0), now)).toBe(false);
+    expect(backupDue(base, created(3), now)).toBe(true);
+  });
+
+  it('follows the chosen interval and can be switched off', () => {
+    const recent = { ...base, backup: { ...base.backup, lastAt: new Date(now - 2 * 86_400_000).toISOString() } };
+    const old = { ...base, backup: { ...base.backup, lastAt: new Date(now - 3 * 86_400_000).toISOString() } };
+    expect(backupDue(recent, created(30), now)).toBe(false);
+    expect(backupDue(old, created(30), now)).toBe(true);
+    expect(backupDue({ ...old, backup: { ...old.backup, intervalDays: 0 } }, created(30), now)).toBe(false);
+    expect(backupDue(old, [], now)).toBe(false);
   });
 });

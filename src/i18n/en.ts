@@ -90,7 +90,7 @@ export const en = {
 
   'detail.missing': 'This subscription no longer exists',
   'detail.markPaid': 'Mark as paid',
-  'detail.renewed': 'I renewed it',
+  'detail.renewed': 'Renewed',
   'detail.paidToast': 'Paid. Next payment: {date}',
   'detail.manage': 'Manage',
   'detail.resume': 'Resume',
@@ -174,6 +174,7 @@ export const en = {
   'cal.month': 'This month',
   'cal.empty': 'No payments this month.',
   'cal.free': 'Nothing due on this day.',
+  'cal.accessEnds': 'access ends',
 
   'stats.month': 'A month',
   'stats.year': 'A year',
@@ -198,9 +199,6 @@ export const en = {
   'settings.ratesHint': 'For subscriptions in other currencies',
   'settings.dateFormat': 'Date format',
   'settings.weekStart': 'Week starts on',
-  'settings.monday': 'Monday',
-  'settings.sunday': 'Sunday',
-  'settings.saturday': 'Saturday',
   'settings.appearance': 'Look',
   'settings.theme': 'Theme',
   'settings.themeSystem': 'System',
@@ -304,7 +302,7 @@ export const en = {
   'import.otherVaultBody': 'Enter the master password from the device the backup came from. Cancel to import without logins.',
 
   'rates.auto': 'Update automatically',
-  'rates.autoHint': 'Once a day, from a public rates table',
+  'rates.autoHint': 'Once a day from a public rates table, and only if some subscriptions are in other currencies',
   'rates.refresh': 'Update now',
   'rates.updated': 'Rates updated',
   'rates.failed': 'Could not load rates. Enter them by hand below.',

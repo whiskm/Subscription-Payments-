@@ -81,7 +81,12 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   );
 
   const setup = useCallback(async () => {
-    if (metaRef.current) return ensure();
+    // Ask the database, not the last render: a vault may have been created a moment ago.
+    const stored = ((await db.kv.get('vault'))?.value as VaultMeta | undefined) ?? null;
+    if (stored) {
+      metaRef.current = stored;
+      return ensure();
+    }
     const password = await askNew(false);
     if (!password) return null;
     const created = await createVault(password);

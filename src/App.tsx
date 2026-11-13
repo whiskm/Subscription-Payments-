@@ -18,7 +18,7 @@ import { Stats } from './screens/Stats';
 import { Settings } from './screens/Settings';
 import { Categories, Import, Rates } from './screens/SettingsPages';
 import { useApp } from './state/app';
-import { back, go, usePath } from './state/router';
+import { back, go, scrollTarget, usePath } from './state/router';
 import { useVault } from './state/vault';
 import type { Key } from './i18n';
 
@@ -60,9 +60,12 @@ function useHousekeeping() {
     void requestPersistence();
   }, []);
 
+  // Rates are fetched only when some subscription is actually in another currency,
+  // so with a single currency the app never goes online at all.
+  const foreign = subs.some((s) => s.currency !== settings.currency);
   useEffect(() => {
-    if (settings.ratesAuto) void refreshRates().catch(() => undefined);
-  }, [settings.ratesAuto, settings.currency]);
+    if (settings.ratesAuto && foreign) void refreshRates().catch(() => undefined);
+  }, [settings.ratesAuto, settings.currency, foreign, today]);
 
   // Reschedule reminders whenever anything they depend on changes.
   useEffect(() => {
@@ -75,7 +78,7 @@ function useHousekeeping() {
   }, [today]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!subs.length || !backupDue(settings) || backupRunning.current) return;
+    if (!backupDue(settings, subs) || backupRunning.current) return;
     backupRunning.current = true;
     void silentBackup(vault.key).finally(() => (backupRunning.current = false));
   }, [today, subs.length, settings.backup.intervalDays, settings.backup.lastAt, vault.key]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -116,10 +119,6 @@ export function App() {
     document.title = appName;
   }, [appName]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [path]);
-
   useHousekeeping();
   useAndroidBack(path);
 
@@ -155,7 +154,7 @@ export function App() {
       </nav>
 
       <main>
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence mode="wait" initial={false} onExitComplete={() => requestAnimationFrame(() => window.scrollTo(0, scrollTarget()))}>
           <motion.div
             key={r.key}
             initial={{ opacity: 0, y: r.tab ? 6 : 18 }}

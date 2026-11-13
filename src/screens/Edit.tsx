@@ -108,6 +108,7 @@ export function Edit({ id, serviceKey }: { id?: string; serviceKey?: string }) {
 
       <form
         className="form"
+        noValidate
         onSubmit={(e) => {
           e.preventDefault();
           void save();
@@ -291,7 +292,19 @@ export function Edit({ id, serviceKey }: { id?: string; serviceKey?: string }) {
 
             <label className="field">
               <span className="field__label">{t('edit.url')}</span>
-              <input className="input input--mono" type="url" inputMode="url" value={sub.url ?? ''} placeholder="https://" autoCapitalize="off" onChange={(e) => set({ url: e.target.value })} />
+              {/* Plain text on purpose: type="url" makes the browser refuse "example.com" without a scheme. */}
+              <input
+                className="input input--mono"
+                type="text"
+                inputMode="url"
+                name="manage-url"
+                value={sub.url ?? ''}
+                placeholder="https://"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+                onChange={(e) => set({ url: e.target.value })}
+              />
             </label>
 
             <div className="field">

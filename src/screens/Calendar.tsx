@@ -166,7 +166,7 @@ export function Calendar() {
                         {c.past && ' ✓'}
                       </>
                     }
-                    value={c.amount ? money(c.amount, c.currency) : t('stub.ended')}
+                    value={c.amount ? money(c.amount, c.currency) : t('cal.accessEnds')}
                   />
                 </button>
               ))}

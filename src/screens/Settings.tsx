@@ -7,16 +7,16 @@ import { Chips, MultiChips, Row, Section, Segmented, Switch } from '../component
 import { DEFAULT_APP_NAME, LANG_NAMES } from '../i18n';
 import { linkFile, linkedFileName, unlinkFile } from '../lib/autobackup';
 import { collectBackup, serializeEncrypted, serializePlain, backupFileName } from '../lib/backup';
-import { db, requestPersistence } from '../lib/db';
+import { kvGet, requestPersistence } from '../lib/db';
 import { toCSV, toICS } from '../lib/exporters';
 import { saveFile } from '../lib/files';
-import { formatDate } from '../lib/format';
+import { formatDate, weekdayNames } from '../lib/format';
 import { CURRENCIES, formatMoney } from '../lib/money';
 import { notifyState, requestNotify, type NotifyState } from '../lib/notify';
 import { canLinkFile, isIOS, isNative, isStandalone } from '../lib/platform';
 import { ownShare } from '../lib/schedule';
 import { eraseEverything } from '../lib/store';
-import type { AccentKey, DateFormat, Lang, Settings as SettingsT, ThemeMode } from '../lib/types';
+import type { AccentKey, DateFormat, Lang, Settings as SettingsT, ThemeMode, VaultMeta } from '../lib/types';
 import { useApp } from '../state/app';
 import { useDialogs } from '../state/dialogs';
 import { go } from '../state/router';
@@ -72,6 +72,7 @@ export function Settings() {
     window.location.replace(window.location.pathname);
   };
 
+  const weekdays = weekdayNames(lang, 0).map((d) => d.charAt(0).toUpperCase() + d.slice(1));
   const remindOptions = [0, 1, 2, 3, 5, 7, 14].map((d) => ({ value: d, label: d === 0 ? t('remind.sameDay') : tn('daysBefore', d) }));
 
   return (
@@ -107,11 +108,7 @@ export function Settings() {
               label={t('settings.weekStart')}
               value={settings.weekStart}
               onChange={(weekStart) => update({ weekStart })}
-              options={[
-                { value: 1, label: t('settings.monday') },
-                { value: 0, label: t('settings.sunday') },
-                { value: 6, label: t('settings.saturday') },
-              ]}
+              options={([1, 0, 6] as const).map((d) => ({ value: d, label: weekdays[d] }))}
             />
           </div>
         </div>
@@ -442,9 +439,9 @@ function ExportOptions({ onDone }: { onDone: () => void }) {
         hint={t('data.exportEncryptedHint')}
         onClick={async () => {
           const key = vault.exists ? await vault.ensure() : await vault.setup();
-          const meta = (await db.kv.get('vault'))?.value;
+          const meta = await kvGet<VaultMeta>('vault');
           if (!key || !meta) return;
-          done(await saveFile(backupFileName(new Date(), true), await serializeEncrypted(await collectBackup(), meta as never, key), 'application/json'));
+          done(await saveFile(backupFileName(new Date(), true), await serializeEncrypted(await collectBackup(), meta, key), 'application/json'));
         }}
       />
       <Row

@@ -17,12 +17,15 @@ interface LinkedHandle {
   createWritable(): Promise<{ write(data: string): Promise<void>; close(): Promise<void> }>;
 }
 
-export function backupDue(s: Settings, now = Date.now()): boolean {
+export function backupDue(s: Settings, subs: Array<{ createdAt: string }>, now = Date.now()): boolean {
   const { intervalDays, lastAt } = s.backup;
-  if (!intervalDays) return false;
-  if (!lastAt) return true;
+  if (!intervalDays || !subs.length) return false;
   // An hour of slack, so "every day" does not creep later and later.
-  return now - Date.parse(lastAt) >= intervalDays * DAY_MS - 3_600_000;
+  const interval = intervalDays * DAY_MS - 3_600_000;
+  if (lastAt) return now - Date.parse(lastAt) >= interval;
+  // Never backed up: count from the first subscription, not from day zero.
+  const first = Math.min(...subs.map((x) => Date.parse(x.createdAt) || now));
+  return now - first >= interval;
 }
 
 export type BackupBlocked = 'needs-unlock';
@@ -122,6 +125,8 @@ async function writeNative(built: Built, keep: number): Promise<boolean> {
  * on desktop into the linked file. Returns false when a tap is needed.
  */
 export async function silentBackup(key: CryptoKey | null): Promise<boolean> {
+  // Nowhere to write without the user: skip the work of building the file.
+  if (!isNative && !(canLinkFile && (await kvGet<LinkedHandle>(HANDLE_KEY)))) return false;
   const built = await build(key);
   if (built === 'needs-unlock') return false;
   const settings = await loadSettings();

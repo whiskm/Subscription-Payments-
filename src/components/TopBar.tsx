@@ -9,7 +9,10 @@ export function TopBar({ kicker, title, actions }: { kicker?: ReactNode; title: 
     <header className="top">
       <div style={{ minWidth: 0 }}>
         {kicker && <div className="mono">{kicker}</div>}
-        <h1 className="top__title">{title}</h1>
+        {/* Long words (such as "Subscription") get a slightly smaller size so they never break mid-word. */}
+        <h1 className="top__title" data-long={title.split(/\s+/).some((w) => w.length >= 11) ? '' : undefined}>
+          {title}
+        </h1>
       </div>
       {actions && <div className="top__actions">{actions}</div>}
     </header>

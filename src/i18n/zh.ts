@@ -176,6 +176,7 @@ export const zh: Record<Key, string> = {
   'cal.month': '本月',
   'cal.empty': '本月没有付款。',
   'cal.free': '这一天没有需要付的款项。',
+  'cal.accessEnds': '到期',
 
   'stats.month': '每月',
   'stats.year': '每年',
@@ -200,9 +201,6 @@ export const zh: Record<Key, string> = {
   'settings.ratesHint': '用于其他货币的订阅',
   'settings.dateFormat': '日期格式',
   'settings.weekStart': '每周开始于',
-  'settings.monday': '周一',
-  'settings.sunday': '周日',
-  'settings.saturday': '周六',
   'settings.appearance': '外观',
   'settings.theme': '主题',
   'settings.themeSystem': '跟随系统',
@@ -306,7 +304,7 @@ export const zh: Record<Key, string> = {
   'import.otherVaultBody': '请输入备份来源设备的主密码。取消则不导入登录信息。',
 
   'rates.auto': '自动更新',
-  'rates.autoHint': '每天一次，来自公开汇率表',
+  'rates.autoHint': '每天一次，来自公开汇率表，且仅在有其他货币的订阅时',
   'rates.refresh': '立即更新',
   'rates.updated': '汇率已更新',
   'rates.failed': '无法加载汇率，请在下方手动输入。',

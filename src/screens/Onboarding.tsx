@@ -63,10 +63,9 @@ export function Onboarding() {
         <motion.div
           key={step}
           className="wizard__body"
-          initial={{ opacity: 0, x: dir * 36 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: dir * -36 }}
-          transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+          initial={{ opacity: 0, x: dir * 28 }}
+          animate={{ opacity: 1, x: 0, transition: { duration: 0.22, ease: [0.2, 0.8, 0.2, 1] } }}
+          exit={{ opacity: 0, x: dir * -20, transition: { duration: 0.12 } }}
         >
           {step === 0 && (
             <>

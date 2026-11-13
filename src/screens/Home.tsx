@@ -22,6 +22,11 @@ export function Home() {
   const overdue = next.filter((u) => u.days < 0 && isCounted(u.sub));
   const soon = next.filter((u) => !(u.days < 0 && isCounted(u.sub)));
   const paidShare = flow.total > 0 ? flow.paid / flow.total : 0;
+  // With nothing inside the horizon, still show the next ticket so the screen answers "when do I pay next?".
+  const nearest = useMemo(
+    () => (soon.length ? undefined : subs.filter((s) => s.status !== 'paused' && s.nextDate > today).sort((a, b) => a.nextDate.localeCompare(b.nextDate))[0]),
+    [soon.length, subs, today],
+  );
 
   return (
     <div className="screen">
@@ -102,10 +107,13 @@ export function Home() {
             {soon.length ? (
               <TicketList subs={soon.map((u) => u.sub)} onOpen={(s) => go(`/sub/${s.id}`)} />
             ) : (
-              <div className="note">
-                <Icon name="check" />
-                <div className="note__body">{tn('nothingSoon', settings.horizonDays)}</div>
-              </div>
+              <>
+                <div className="note">
+                  <Icon name="check" />
+                  <div className="note__body">{tn('nothingSoon', settings.horizonDays)}</div>
+                </div>
+                {nearest && <TicketList subs={[nearest]} onOpen={(x) => go(`/sub/${x.id}`)} />}
+              </>
             )}
           </Section>
 

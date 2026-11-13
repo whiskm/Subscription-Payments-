@@ -36,7 +36,7 @@ export function BackupNote() {
   const run = useBackupAction();
   const [busy, setBusy] = useState(false);
   const [snoozed, setSnoozed] = useState(false);
-  if (snoozed || !subs.length || !backupDue(settings)) return null;
+  if (snoozed || !backupDue(settings, subs)) return null;
   return (
     <div className="note note--accent">
       <Icon name="shield" />

@@ -182,7 +182,7 @@ export function TicketList({ subs, onOpen }: { subs: Subscription[]; onOpen: (s:
             layout="position"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96 }}
+            exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.14 } }}
             transition={{ type: 'spring', stiffness: 360, damping: 32, delay: Math.min(i, 8) * 0.025 }}
           >
             <Ticket sub={s} onClick={() => onOpen(s)} />
