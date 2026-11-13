@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <mask id="t">
+      <rect width="512" height="512" fill="#fff"/>
+      <circle cx="318" cy="150" r="20" fill="#000"/>
+      <circle cx="318" cy="362" r="20" fill="#000"/>
+    </mask>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#E4572E"/>
+  <g transform="rotate(-8 256 256)">
+    <rect x="96" y="150" width="320" height="212" rx="30" fill="#1B1915" opacity=".22" transform="translate(6 14)"/>
+    <g mask="url(#t)">
+      <rect x="96" y="150" width="320" height="212" rx="30" fill="#FAF6EC"/>
+    </g>
+    <path d="M318 182v148" stroke="#1B1915" stroke-width="7" stroke-linecap="round" stroke-dasharray="1 17"/>
+    <rect x="132" y="190" width="58" height="58" rx="16" fill="#1B1915"/>
+    <rect x="132" y="272" width="148" height="16" rx="8" fill="#1B1915" opacity=".85"/>
+    <rect x="132" y="304" width="96" height="16" rx="8" fill="#1B1915" opacity=".35"/>
+    <text x="367" y="282" text-anchor="middle" font-family="Unbounded, Arial Black, sans-serif" font-weight="800" font-size="92" fill="#E4572E">7</text>
+  </g>
+</svg>
