@@ -57,9 +57,10 @@ export async function linkedFileName(): Promise<string | null> {
 
 /** Desktop Chromium: choose one file that later backups overwrite in place. */
 export async function linkFile(): Promise<string | null> {
-  const picker = (window as unknown as { showSaveFilePicker(o: object): Promise<LinkedHandle> }).showSaveFilePicker;
+  // Must be called on window itself: a detached reference throws "Illegal invocation".
+  const host = window as unknown as { showSaveFilePicker(o: object): Promise<LinkedHandle> };
   try {
-    const handle = await picker({
+    const handle = await host.showSaveFilePicker({
       suggestedName: 'subscriptions-backup.json',
       types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }],
     });
