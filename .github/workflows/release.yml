@@ -5,6 +5,14 @@ name: Release
 on:
   push:
     tags: ['v*']
+  # Re-publish an existing version (for example after a failed run): Actions →
+  # Release → Run workflow, and enter the tag. The apps are built from the
+  # selected branch and attached to that tag's release.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag of the release to attach the files to, e.g. v0.1.0
+        required: true
 
 permissions:
   contents: write
@@ -26,19 +34,21 @@ jobs:
           path: release
           merge-multiple: true
 
-      - name: Name the files after the version
+      # Artifacts keep their folder layout (nsis/, msi/, deb/…); flatten it
+      # and drop spaces from the names so the download links stay readable.
+      - name: Collect the files
         run: |
-          cd release
-          ls -la
-          for f in *; do
-            case "$f" in
-              *.apk) ;;
-              *) mv "$f" "$(echo "$f" | tr ' ' '-')" ;;
-            esac
-          done
-          ls -la
+          mkdir -p out
+          find release -type f \( -name '*.apk' -o -name '*.exe' -o -name '*.msi' \
+            -o -name '*.deb' -o -name '*.rpm' -o -name '*.AppImage' \) -print0 |
+            while IFS= read -r -d '' f; do
+              mv "$f" "out/$(basename "$f" | tr ' ' '-')"
+            done
+          ls -la out
+          test -n "$(ls out)"
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: release/*
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          files: out/*
           generate_release_notes: true

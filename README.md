@@ -176,6 +176,8 @@ npm version patch          # 0.1.0 → 0.1.1: версия попадёт в And
 git push --follow-tags     # запускает release.yml
 ```
 
+Тег можно создать и в браузере: **Releases → Draft a new release → Choose a tag → `v1.2.3` → Create new tag on publish → Publish release**. Если сборка или публикация не удалась, исправьте причину и запустите **Actions → Release → Run workflow** с этим тегом: файлы прикрепятся к уже созданному релизу.
+
 ### Ключ подписи Android (один раз)
 
 Android устанавливает обновление поверх старой версии, только если обе подписаны одним ключом. Создайте его один раз и сохраните в секретах:
