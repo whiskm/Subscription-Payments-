@@ -7,7 +7,7 @@ import { BackBar } from '../components/TopBar';
 import { IconButton, Leader, PasswordInput, Row, Section } from '../components/ui';
 import { generatePassword } from '../lib/crypto';
 import { db } from '../lib/db';
-import { copyText } from '../lib/files';
+import { clearClipboard, copyText } from '../lib/files';
 import { toBase } from '../lib/money';
 import { cycleProgress, daysLeft, monthlyCost, ownShare } from '../lib/schedule';
 import { deleteSubscription, payNow, setStatus } from '../lib/store';
@@ -288,7 +288,7 @@ function CredentialsCard({ sub }: { sub: Subscription }) {
     if (secret) {
       window.clearTimeout(clearTimer.current);
       // Best effort: browsers only allow this while the app is in front.
-      clearTimer.current = window.setTimeout(() => void navigator.clipboard.writeText('').catch(() => undefined), 30_000);
+      clearTimer.current = window.setTimeout(() => void clearClipboard(), 30_000);
     }
   };
 

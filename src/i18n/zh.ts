@@ -378,6 +378,18 @@ export const zh: Record<Key, string> = {
   'onb.p3': '导出为文件，在另一部手机或电脑上导入。',
   'onb.start': '添加第一个订阅',
 
+  'notify.hintDesktop': '应用运行时（包括最小化到托盘时）会在设定时间提醒。若需要始终送达的提醒，请把付款添加到日历。',
+  'backup.openFolder': '打开备份文件夹',
+  'backup.folderHint': '文档/SubscriptionPayments',
+  'backup.folderFailed': '无法打开文件夹',
+  'settings.desktop': '后台运行',
+  'desktop.tray': '保留在托盘中',
+  'desktop.trayHint': '关闭窗口时最小化到托盘，提醒仍会送达。可从托盘菜单退出。',
+  'desktop.autostart': '登录时启动',
+  'desktop.autostartHint': '在托盘中静默启动，不错过任何付款',
+  'desktop.autostartFailed': '系统不允许此操作',
+  'tray.open': '打开',
+  'tray.quit': '退出',
   'csv.name': '名称',
 };
 

@@ -6,7 +6,7 @@ import { DEFAULT_APP_NAME } from '../i18n';
 import { requestPersistence } from '../lib/db';
 import { CURRENCIES, currencySymbol } from '../lib/money';
 import { requestNotify } from '../lib/notify';
-import { isIOS, isNative, isStandalone } from '../lib/platform';
+import { isAndroidApp, isApp, isDesktopApp, isIOS, isStandalone } from '../lib/platform';
 import { LANG_CURRENCY } from '../lib/settings';
 import type { Lang, ThemeMode } from '../lib/types';
 import { useApp } from '../state/app';
@@ -137,14 +137,14 @@ export function Onboarding() {
                     { value: 0, label: t('backup.off') },
                   ]}
                 />
-                <span className="field__hint">{t(isNative ? 'backup.hintNative' : 'backup.hintWeb')}</span>
+                <span className="field__hint">{t(isApp ? 'backup.hintNative' : 'backup.hintWeb')}</span>
               </div>
               <div className="card rows">
                 <div className="row">
                   <Icon name="bell" className="row__icon" />
                   <div className="row__text">
                     <div className="row__label">{t('settings.notifications')}</div>
-                    <div className="row__hint">{t(isNative ? 'notify.hintNative' : 'notify.hintWeb')}</div>
+                    <div className="row__hint">{t(isAndroidApp ? 'notify.hintNative' : isDesktopApp ? 'notify.hintDesktop' : 'notify.hintWeb')}</div>
                   </div>
                   <Switch label={t('settings.notifications')} checked={settings.notifications} onChange={enableNotifications} />
                 </div>
@@ -160,7 +160,7 @@ export function Onboarding() {
                 <Point icon="device" title={t('onb.p1Title')} text={t('onb.p1')} />
                 <Point icon="key" title={t('onb.p2Title')} text={t('onb.p2')} />
                 <Point icon="shield" title={t('onb.p3Title')} text={t('onb.p3')} />
-                {!isNative && !isStandalone() && <Point icon="download" title={t('about.install')} text={t(isIOS ? 'about.installIOS' : 'about.installOther')} />}
+                {!isApp && !isStandalone() && <Point icon="download" title={t('about.install')} text={t(isIOS ? 'about.installIOS' : 'about.installOther')} />}
               </div>
             </>
           )}

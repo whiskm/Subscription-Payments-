@@ -126,4 +126,6 @@ export interface Settings {
   lockOnLaunch: boolean;
   /** Minutes in the background before the vault locks; 0 = only when the app closes. */
   autoLockMin: number;
+  /** Desktop app: closing the window hides it to the tray, so reminders keep arriving. */
+  trayOnClose: boolean;
 }

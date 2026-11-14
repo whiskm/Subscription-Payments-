@@ -2,7 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { ensureDefaults, applyAppearance, readMirror, detectLang } from './lib/settings';
-import { isNative } from './lib/platform';
+import { routeExternalLinks } from './lib/desktop';
+import { isApp } from './lib/platform';
 import { AppProvider } from './state/app';
 import { DialogsProvider } from './state/dialogs';
 import { VaultProvider } from './state/vault';
@@ -13,7 +14,8 @@ applyAppearance({ theme: 'system', accent: 'vermilion', density: 'cozy', lang: d
 
 async function start() {
   await ensureDefaults();
-  if (!isNative && import.meta.env.PROD) {
+  routeExternalLinks();
+  if (!isApp && import.meta.env.PROD) {
     const { registerSW } = await import('virtual:pwa-register');
     registerSW({ immediate: true });
   }

@@ -1,0 +1,44 @@
+name: Release
+
+# Push a version tag (git tag v1.2.3 && git push --tags) to build every app
+# and publish them together on the GitHub Releases page.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    uses: ./.github/workflows/android.yml
+    secrets: inherit
+
+  desktop:
+    uses: ./.github/workflows/desktop.yml
+
+  publish:
+    needs: [android, desktop]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v6
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: Name the files after the version
+        run: |
+          cd release
+          ls -la
+          for f in *; do
+            case "$f" in
+              *.apk) ;;
+              *) mv "$f" "$(echo "$f" | tr ' ' '-')" ;;
+            esac
+          done
+          ls -la
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true

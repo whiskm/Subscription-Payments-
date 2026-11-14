@@ -3,8 +3,9 @@ import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
 import { Icon, type IconName } from './components/icons';
 import { backupDue, silentBackup } from './lib/autobackup';
 import { requestPersistence } from './lib/db';
-import { notifyOnOpen, syncNotifications } from './lib/notify';
-import { isNative } from './lib/platform';
+import { setKeepInTray, setTrayLabels, setWindowTitle } from './lib/desktop';
+import { notifyDue, syncNotifications } from './lib/notify';
+import { isAndroidApp, isDesktopApp } from './lib/platform';
 import { refreshRates } from './lib/rates';
 import { rollAll } from './lib/store';
 import { Calendar } from './screens/Calendar';
@@ -73,9 +74,16 @@ function useHousekeeping() {
     return () => window.clearTimeout(timer);
   }, [subs, settings]);
 
+  // Once a day on the website (when opened). The desktop app checks every few
+  // minutes while it runs, including from the tray, so it fires at the chosen time.
+  const latest = useRef({ subs, settings });
+  latest.current = { subs, settings };
   useEffect(() => {
-    void notifyOnOpen(subs, settings, today);
-  }, [today]); // eslint-disable-line react-hooks/exhaustive-deps
+    void notifyDue(subs, settings, today);
+    if (!isDesktopApp) return;
+    const timer = window.setInterval(() => void notifyDue(latest.current.subs, latest.current.settings), 5 * 60_000);
+    return () => window.clearInterval(timer);
+  }, [today, settings.notifications, settings.notifyTime]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!backupDue(settings, subs) || backupRunning.current) return;
@@ -88,7 +96,7 @@ function useAndroidBack(path: string) {
   const pathRef = useRef(path);
   pathRef.current = path;
   useEffect(() => {
-    if (!isNative) return;
+    if (!isAndroidApp) return;
     let remove: (() => void) | undefined;
     void import('@capacitor/app').then(({ App }) =>
       App.addListener('backButton', () => {
@@ -117,7 +125,16 @@ export function App() {
 
   useEffect(() => {
     document.title = appName;
+    void setWindowTitle(appName);
   }, [appName]);
+
+  // Desktop shell: tray menu in the chosen language, and what closing the window does.
+  useEffect(() => {
+    void setTrayLabels(t('tray.open'), t('tray.quit'));
+  }, [t]);
+  useEffect(() => {
+    void setKeepInTray(settings.trayOnClose);
+  }, [settings.trayOnClose]);
 
   useHousekeeping();
   useAndroidBack(path);

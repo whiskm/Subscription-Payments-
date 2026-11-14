@@ -376,6 +376,18 @@ export const en = {
   'onb.p3': 'Export to a file, import on another phone or computer.',
   'onb.start': 'Add the first subscription',
 
+  'notify.hintDesktop': 'Arrive at the chosen time while the app is running, also when it sits in the tray. For reminders that always arrive, add the payments to your calendar.',
+  'backup.openFolder': 'Open the backup folder',
+  'backup.folderHint': 'Documents/SubscriptionPayments',
+  'backup.folderFailed': 'Could not open the folder',
+  'settings.desktop': 'Background',
+  'desktop.tray': 'Keep running in the tray',
+  'desktop.trayHint': 'Closing the window hides it to the tray, so reminders still arrive. Quit from the tray menu.',
+  'desktop.autostart': 'Start when I log in',
+  'desktop.autostartHint': 'Quietly, in the tray, so no payment is missed',
+  'desktop.autostartFailed': 'The system did not allow it',
+  'tray.open': 'Open',
+  'tray.quit': 'Quit',
   'csv.name': 'Name',
 } as const;
 

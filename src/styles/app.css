@@ -1293,6 +1293,11 @@ input[type='date'].input {
   overflow: hidden;
 }
 
+/* The panel takes focus only so keyboard users start inside it; WebKit would draw a ring around all of it. */
+.sheet:focus {
+  outline: none;
+}
+
 .sheet__head {
   display: flex;
   align-items: center;

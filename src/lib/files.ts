@@ -1,13 +1,15 @@
-import { isNative, isTouch } from './platform';
+import { desktopCopy, desktopSaveFile } from './desktop';
+import { isAndroidApp, isDesktopApp, isTouch } from './platform';
 
-export type SaveOutcome = 'shared' | 'downloaded' | 'cancelled';
+export type SaveOutcome = 'shared' | 'downloaded' | 'saved' | 'cancelled';
 
 /**
  * Hands a generated file to the user. Phones get the system share sheet
  * ("Save to Files", send to yourself…), desktops get a regular download.
  */
 export async function saveFile(name: string, content: string, mime: string): Promise<SaveOutcome> {
-  if (isNative) {
+  if (isDesktopApp) return (await desktopSaveFile(name, content)) ? 'saved' : 'cancelled';
+  if (isAndroidApp) {
     const { Filesystem, Directory, Encoding } = await import('@capacitor/filesystem');
     const { Share } = await import('@capacitor/share');
     const written = await Filesystem.writeFile({ path: name, data: content, directory: Directory.Cache, encoding: Encoding.UTF8 });
@@ -63,9 +65,15 @@ export function pickTextFile(accept: string): Promise<string | null> {
 
 export async function copyText(text: string): Promise<boolean> {
   try {
-    await navigator.clipboard.writeText(text);
+    if (isDesktopApp) await desktopCopy(text);
+    else await navigator.clipboard.writeText(text);
     return true;
   } catch {
     return false;
   }
+}
+
+/** Best-effort wipe of a copied password. */
+export async function clearClipboard(): Promise<void> {
+  await copyText('');
 }
