@@ -15,7 +15,8 @@ const jobs = [
   ['icon-maskable.svg', 'public/icons/maskable-512.png', 512],
   ['icon-maskable.svg', 'public/apple-touch-icon.png', 180],
   ['icon.svg', 'assets/icon-only.png', 1024],
-  ['icon-maskable.svg', 'assets/icon-foreground.png', 1024],
+  // Android adaptive icons crop harder than PWA maskable icons, so they keep a smaller ticket.
+  ['icon-adaptive.svg', 'assets/icon-foreground.png', 1024],
 ];
 
 mkdirSync(new URL('../public/icons', import.meta.url), { recursive: true });
