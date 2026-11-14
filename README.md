@@ -6,8 +6,10 @@
 
 **Каждая подписка — билет с отрывным корешком, на котором видно, сколько дней осталось до оплаты.**
 
-Веб-приложение (PWA) на Cloudflare Pages, приложения для Windows, Linux и Android из GitHub Releases, iPhone через «На экран Домой».
+Веб-приложение (PWA) на Cloudflare, приложения для Windows, Linux и Android из GitHub Releases, iPhone через «На экран Домой».
 Все данные хранятся только на устройстве.
+
+**[Открыть приложение](https://subscription-payments.whiskm.workers.dev/)** · **[Скачать для Android, Windows и Linux](../../releases/latest)**
 
 [Возможности](#возможности) · [Приватность](#приватность) · [Установка](#установка) · [Деплой на Cloudflare](#деплой-на-cloudflare-pages) · [Выпуск версий](#выпуск-новой-версии) · [Разработка](#разработка)
 
@@ -26,9 +28,9 @@
   </tr>
 </table>
 
-> **EN.** A local-first subscription tracker. Each subscription is a ticket whose tear-off stub counts down to the next payment. Spending stats, a payment calendar, encrypted logins, reminders, JSON/CSV/ICS export and import. Russian, English and Chinese. No accounts, no servers: everything stays on the device.
+> **EN.** A local-first subscription tracker. Each subscription is a ticket whose tear-off stub counts down to the next payment. Spending stats, a payment calendar, encrypted logins, reminders, JSON/CSV/ICS export and import. Russian, English and Chinese. No accounts, no servers: everything stays on the device. **[Open the app](https://subscription-payments.whiskm.workers.dev/)** · on iPhone: Safari → Share → Add to Home Screen.
 >
-> **中文.** 本地优先的订阅管理应用。每个订阅都是一张票，票根上显示距离下次付款的天数。支持支出统计、付款日历、加密保存登录信息、提醒、JSON/CSV/ICS 导入导出。支持俄语、英语和简体中文。无需账号，没有服务器，所有数据只保存在设备上。
+> **中文.** 本地优先的订阅管理应用。每个订阅都是一张票，票根上显示距离下次付款的天数。支持支出统计、付款日历、加密保存登录信息、提醒、JSON/CSV/ICS 导入导出。支持俄语、英语和简体中文。无需账号，没有服务器，所有数据只保存在设备上。**[打开应用](https://subscription-payments.whiskm.workers.dev/)** · iPhone：Safari → 分享 → 添加到主屏幕。
 
 ## Возможности
 
@@ -99,7 +101,7 @@
 
 App Store не нужен:
 
-1. Откройте адрес приложения в **Safari**.
+1. Откройте в **Safari**: **[subscription-payments.whiskm.workers.dev](https://subscription-payments.whiskm.workers.dev/)**.
 2. Нажмите «Поделиться», затем **«На экран „Домой“»**.
 3. Приложение откроется как обычное, на весь экран, и будет работать без интернета.
 
@@ -107,10 +109,10 @@ App Store не нужен:
 
 ### Android
 
-1. Откройте [Releases](../../releases) и скачайте `subscription-payments.apk`.
+1. Откройте [последний релиз](../../releases/latest) и скачайте `subscription-payments.apk`.
 2. Разрешите установку из этого источника, когда телефон спросит.
 
-Можно также открыть веб-версию в Chrome и выбрать «Установить приложение».
+Можно также открыть [веб-версию](https://subscription-payments.whiskm.workers.dev/) в Chrome и выбрать «Установить приложение».
 
 ### Windows
 
@@ -134,7 +136,7 @@ App Store не нужен:
 
 ### Компьютер без установки
 
-Откройте веб-версию в Chrome или Edge и нажмите значок установки в адресной строке, или просто пользуйтесь во вкладке.
+Откройте [веб-версию](https://subscription-payments.whiskm.workers.dev/) в Chrome или Edge и нажмите значок установки в адресной строке, или просто пользуйтесь во вкладке.
 
 ## Деплой на Cloudflare Pages
 
