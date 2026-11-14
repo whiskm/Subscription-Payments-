@@ -1,0 +1,64 @@
+name: Desktop
+
+# Builds the Windows and Linux apps on every push that touches the app
+# (download them from the run's artifacts). release.yml calls this workflow
+# for version tags.
+on:
+  push:
+    branches: ['**']
+    paths-ignore: ['**.md', 'docs/**', 'android/**']
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: windows
+            os: windows-latest
+            bundles: nsis,msi
+          # The oldest supported Ubuntu, so the AppImage and .deb also run on older distributions.
+          - name: linux
+            os: ubuntu-22.04
+            bundles: deb,rpm,appimage
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Linux system libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - run: npm ci
+
+      - name: Build
+        run: npx tauri build --bundles ${{ matrix.bundles }}
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: desktop-${{ matrix.name }}
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/rpm/*.rpm
+            src-tauri/target/release/bundle/appimage/*.AppImage

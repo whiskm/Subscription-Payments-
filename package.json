@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "icons": "node scripts/build-brand-icons.mjs",
-    "android:sync": "npm run build:native && cap sync android"
+    "android:sync": "npm run build:native && cap sync android",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",
@@ -23,6 +25,11 @@
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/onest": "^5.3.1",
     "@fontsource-variable/unbounded": "^5.3.0",
+    "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-autostart": "^2.7.0",
+    "@tauri-apps/plugin-clipboard-manager": "^2.5.0",
+    "@tauri-apps/plugin-notification": "^2.8.1",
+    "@tauri-apps/plugin-opener": "^2.7.3",
     "dexie": "^4.4.7",
     "dexie-react-hooks": "^4.4.0",
     "motion": "^14.14.0",
@@ -33,6 +40,7 @@
     "@capacitor/android": "^8.6.2",
     "@capacitor/assets": "^4.0.0",
     "@capacitor/cli": "^8.6.2",
+    "@tauri-apps/cli": "^2.12.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",

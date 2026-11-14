@@ -1,7 +1,8 @@
 import { plural, translate } from '../i18n';
 import { addDays, parts, todayISO } from './dates';
 import { formatMoney } from './money';
-import { isNative } from './platform';
+import { desktopNotify, desktopNotifyPermission } from './desktop';
+import { isAndroidApp, isDesktopApp } from './platform';
 import { daysLeft, isCounted, occurrences, ownShare, remindDaysFor } from './schedule';
 import type { ISODate, Settings, Subscription } from './types';
 
@@ -13,7 +14,8 @@ const WEB_SHOWN_KEY = 'sp:notified';
 export type NotifyState = 'granted' | 'denied' | 'prompt' | 'unsupported';
 
 export async function notifyState(): Promise<NotifyState> {
-  if (isNative) {
+  if (isDesktopApp) return desktopNotifyPermission(false).catch(() => 'unsupported' as const);
+  if (isAndroidApp) {
     const { LocalNotifications } = await import('@capacitor/local-notifications');
     const p = await LocalNotifications.checkPermissions();
     return p.display === 'granted' ? 'granted' : p.display === 'denied' ? 'denied' : 'prompt';
@@ -23,7 +25,8 @@ export async function notifyState(): Promise<NotifyState> {
 }
 
 export async function requestNotify(): Promise<NotifyState> {
-  if (isNative) {
+  if (isDesktopApp) return desktopNotifyPermission(true).catch(() => 'unsupported' as const);
+  if (isAndroidApp) {
     const { LocalNotifications } = await import('@capacitor/local-notifications');
     const p = await LocalNotifications.requestPermissions();
     return p.display === 'granted' ? 'granted' : 'denied';
@@ -72,7 +75,7 @@ export function planReminders(subs: Subscription[], s: Settings, today: ISODate 
 
 /** Android: replaces all scheduled reminders with a fresh plan. */
 export async function syncNotifications(subs: Subscription[], s: Settings): Promise<void> {
-  if (!isNative) return;
+  if (!isAndroidApp) return;
   try {
     const { LocalNotifications } = await import('@capacitor/local-notifications');
     const pending = await LocalNotifications.getPending();
@@ -88,12 +91,24 @@ export async function syncNotifications(subs: Subscription[], s: Settings): Prom
   }
 }
 
+/** Minutes since midnight of an "HH:MM" string. */
+function minutesOf(time: string): number {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
 /**
- * Browsers cannot schedule a notification for later without a server, so on
- * the web we notify once a day, when the app is opened, about what is due.
+ * Notifies once a day about what is due. Browsers cannot schedule a
+ * notification without a server, so the website does this when it is opened.
+ * The desktop app keeps running in the tray and calls this every few minutes;
+ * there it waits for the chosen time of day.
  */
-export async function notifyOnOpen(subs: Subscription[], s: Settings, today: ISODate = todayISO()): Promise<void> {
-  if (isNative || !s.notifications || typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+export async function notifyDue(subs: Subscription[], s: Settings, today: ISODate = todayISO(), now = new Date()): Promise<void> {
+  if (isAndroidApp || !s.notifications) return;
+  if (isDesktopApp) {
+    if (now.getHours() * 60 + now.getMinutes() < minutesOf(s.notifyTime)) return;
+    if ((await notifyState()) !== 'granted') return;
+  } else if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
   try {
     if (localStorage.getItem(WEB_SHOWN_KEY) === today) return;
     const due = subs.filter((sub) => {
@@ -107,6 +122,7 @@ export async function notifyOnOpen(subs: Subscription[], s: Settings, today: ISO
     const first = message(due[0], daysLeft(due[0], today), s);
     const title = due.length === 1 ? first.title : plural(s.lang, 'needAttention', due.length);
     const body = due.length === 1 ? first.body : due.slice(0, 4).map((d) => d.name).join(', ');
+    if (isDesktopApp) return desktopNotify(title, body);
     const reg = await navigator.serviceWorker?.getRegistration();
     if (reg) await reg.showNotification(title, { body, tag: 'sp-due', icon: '/icons/icon-192.png' });
     else new Notification(title, { body, tag: 'sp-due' });

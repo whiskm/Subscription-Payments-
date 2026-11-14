@@ -13,7 +13,8 @@ import { saveFile } from '../lib/files';
 import { formatDate, weekdayNames } from '../lib/format';
 import { CURRENCIES, formatMoney } from '../lib/money';
 import { notifyState, requestNotify, type NotifyState } from '../lib/notify';
-import { canLinkFile, isIOS, isNative, isStandalone } from '../lib/platform';
+import { autostartEnabled, openBackupFolder, openExternal, setAutostart } from '../lib/desktop';
+import { canLinkFile, isAndroidApp, isApp, isDesktopApp, isIOS, isStandalone } from '../lib/platform';
 import { ownShare } from '../lib/schedule';
 import { eraseEverything } from '../lib/store';
 import type { AccentKey, DateFormat, Lang, Settings as SettingsT, ThemeMode, VaultMeta } from '../lib/types';
@@ -44,9 +45,11 @@ export function Settings() {
   const [notify, setNotify] = useState<NotifyState>('unsupported');
   const [linked, setLinked] = useState<string | null>(null);
   const [persisted, setPersisted] = useState<boolean | null>(null);
+  const [autostart, setAutostartState] = useState(false);
 
   useEffect(() => {
     void notifyState().then(setNotify);
+    if (isDesktopApp) void autostartEnabled().then(setAutostartState).catch(() => undefined);
     void linkedFileName().then(setLinked);
     void navigator.storage?.persisted?.().then(setPersisted).catch(() => setPersisted(null));
   }, []);
@@ -176,7 +179,7 @@ export function Settings() {
 
       <Section title={t('settings.reminders')}>
         <div className="card rows">
-          <Row icon="bell" label={t('settings.notifications')} hint={t(isNative ? 'notify.hintNative' : notify === 'unsupported' ? 'notify.hintUnsupported' : 'notify.hintWeb')}>
+          <Row icon="bell" label={t('settings.notifications')} hint={t(isAndroidApp ? 'notify.hintNative' : isDesktopApp ? 'notify.hintDesktop' : notify === 'unsupported' ? 'notify.hintUnsupported' : 'notify.hintWeb')}>
             <Switch label={t('settings.notifications')} checked={settings.notifications && notify === 'granted'} onChange={toggleNotifications} />
           </Row>
           <div className="row row--stack">
@@ -191,7 +194,7 @@ export function Settings() {
               options={remindOptions}
             />
           </div>
-          {isNative && (
+          {isApp && (
             <Row icon="clock" label={t('settings.notifyTime')}>
               <input className="input input--mono" type="time" style={{ width: 110, height: 36 }} value={settings.notifyTime} onChange={(e) => e.target.value && update({ notifyTime: e.target.value })} />
             </Row>
@@ -217,7 +220,7 @@ export function Settings() {
           <div className="row row--stack">
             <div className="row__text">
               <div className="row__label">{t('backup.interval')}</div>
-              <div className="row__hint">{t(isNative ? 'backup.hintNative' : canLinkFile ? 'backup.hintDesktop' : 'backup.hintWeb')}</div>
+              <div className="row__hint">{t(isApp ? 'backup.hintNative' : canLinkFile ? 'backup.hintDesktop' : 'backup.hintWeb')}</div>
             </div>
             <Chips<number>
               label={t('backup.interval')}
@@ -254,7 +257,7 @@ export function Settings() {
               }}
             />
           )}
-          {isNative && (
+          {isApp && (
             <Row icon="file" label={t('backup.keep')}>
               <Segmented<number>
                 label={t('backup.keep')}
@@ -272,7 +275,8 @@ export function Settings() {
         <div className="card rows">
           <Row icon="upload" label={t('data.import')} hint={t('data.importHint')} onClick={() => go('/settings/import')} />
           <Row icon="download" label={t('data.export')} hint={t('data.exportHint')} onClick={() => setSheet('export')} />
-          {!isNative && (
+          {isDesktopApp && <Row icon="file" label={t('backup.openFolder')} hint={t('backup.folderHint')} onClick={() => void openBackupFolder().catch(() => toast(t('backup.folderFailed')))} />}
+          {!isApp && (
             <Row
               icon="shield"
               label={t('data.persist')}
@@ -291,6 +295,32 @@ export function Settings() {
           )}
         </div>
       </Section>
+
+      {isDesktopApp && (
+        <Section title={t('settings.desktop')}>
+          <div className="card rows">
+            <Row icon="device" label={t('desktop.tray')} hint={t('desktop.trayHint')}>
+              <Switch label={t('desktop.tray')} checked={settings.trayOnClose} onChange={(trayOnClose) => update({ trayOnClose })} />
+            </Row>
+            <Row icon="clock" label={t('desktop.autostart')} hint={t('desktop.autostartHint')}>
+              <Switch
+                label={t('desktop.autostart')}
+                checked={autostart}
+                onChange={async (on) => {
+                  try {
+                    await setAutostart(on);
+                    setAutostartState(on);
+                    // Starting at login only helps reminders if closing keeps the app in the tray.
+                    if (on && !settings.trayOnClose) await update({ trayOnClose: true });
+                  } catch {
+                    toast(t('desktop.autostartFailed'));
+                  }
+                }}
+              />
+            </Row>
+          </div>
+        </Section>
+      )}
 
       <Section title={t('settings.security')}>
         <div className="card rows">
@@ -332,8 +362,8 @@ export function Settings() {
               <div className="row__hint">{t('about.privacy')}</div>
             </div>
           </div>
-          {!isNative && !isStandalone() && <Row icon="device" label={t('about.install')} hint={t(isIOS ? 'about.installIOS' : 'about.installOther')} />}
-          <Row icon="external" label="GitHub" value={`v${__APP_VERSION__}`} onClick={() => window.open(REPO_URL, '_blank', 'noopener,noreferrer')} />
+          {!isApp && !isStandalone() && <Row icon="device" label={t('about.install')} hint={t(isIOS ? 'about.installIOS' : 'about.installOther')} />}
+          <Row icon="external" label="GitHub" value={`v${__APP_VERSION__}`} onClick={() => void openExternal(REPO_URL)} />
           <Row icon="trash" danger label={t('data.erase')} hint={t('data.eraseHint')} onClick={erase} />
         </div>
       </Section>

@@ -39,6 +39,7 @@ export function defaultSettings(lang: Lang = detectLang()): Settings {
     backup: { intervalDays: 3, encrypt: false, lastAt: null, keep: 5 },
     lockOnLaunch: false,
     autoLockMin: 5,
+    trayOnClose: true,
   };
 }
 

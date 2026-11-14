@@ -1,16 +1,16 @@
 name: Android
 
-# Builds the APK on every push that touches the app, and publishes it to
-# GitHub Releases when a version tag (v1.2.3) is pushed.
+# Builds the APK on every push that touches the app (download it from the
+# run's artifacts). release.yml calls this workflow for version tags.
 on:
   push:
     branches: ['**']
-    tags: ['v*']
-    paths-ignore: ['**.md', 'docs/**']
+    paths-ignore: ['**.md', 'docs/**', 'src-tauri/**']
   workflow_dispatch:
+  workflow_call:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   apk:
@@ -70,10 +70,3 @@ jobs:
           name: apk
           path: subscription-payments*.apk
           if-no-files-found: error
-
-      - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: subscription-payments*.apk
-          generate_release_notes: true

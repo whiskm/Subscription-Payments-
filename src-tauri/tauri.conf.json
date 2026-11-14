@@ -1,0 +1,86 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Subscription Payments",
+  "mainBinaryName": "subscription-payments",
+  "version": "../package.json",
+  "identifier": "io.github.whiskm.subscriptionpayments",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "npm run build:native",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Subscription Payments",
+        "width": 1120,
+        "height": 800,
+        "minWidth": 360,
+        "minHeight": 560,
+        "center": true,
+        "visible": false,
+        "backgroundColor": "#EBE3D3",
+        "dragDropEnabled": false
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "style-src": "'self' 'unsafe-inline'",
+        "img-src": "'self' data: blob:",
+        "font-src": "'self'",
+        "connect-src": "'self' ipc: http://ipc.localhost https://cdn.jsdelivr.net https://latest.currency-api.pages.dev",
+        "object-src": "'none'",
+        "base-uri": "'none'",
+        "form-action": "'none'"
+      },
+      "freezePrototype": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Finance",
+    "shortDescription": "Subscriptions, renewal dates and logins — stored only on your computer",
+    "longDescription": "Track subscriptions, see how many days are left until each payment, spending statistics, a payment calendar and logins encrypted with a master password. No accounts and no servers: everything stays on this computer.",
+    "copyright": "© Subscription Payments contributors",
+    "homepage": "https://github.com/whiskm/Subscription-Payments-",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": [
+          "Russian",
+          "English",
+          "SimpChinese"
+        ],
+        "displayLanguageSelector": false,
+        "installerIcon": "icons/icon.ico"
+      },
+      "wix": {
+        "language": [
+          "ru-RU",
+          "en-US",
+          "zh-CN"
+        ]
+      }
+    },
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    }
+  }
+}

@@ -231,6 +231,7 @@ function sanitizeSettings(v: unknown): Partial<Settings> {
   pick('sort', oneOf(['date', 'price', 'name']));
   pick('horizonDays', (x) => num(x, 1, 365) !== undefined);
   pick('lockOnLaunch', bool);
+  pick('trayOnClose', bool);
   pick('autoLockMin', (x) => num(x, 0, 1440) !== undefined);
   if (Array.isArray(r.remindDays)) {
     out.remindDays = [...new Set(r.remindDays.filter((d): d is number => num(d, 0, 365) !== undefined).map(Math.floor))].slice(0, 6);

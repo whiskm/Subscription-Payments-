@@ -2,7 +2,8 @@ import { backupFileName, collectBackup, serializeEncrypted, serializePlain } fro
 import { DAY_MS } from './dates';
 import { kvGet, kvSet, db } from './db';
 import { saveFile, type SaveOutcome } from './files';
-import { canLinkFile, isNative } from './platform';
+import { desktopWriteBackup } from './desktop';
+import { canLinkFile, isApp, isDesktopApp } from './platform';
 import { loadSettings, patchSettings } from './settings';
 import type { Settings, VaultMeta } from './types';
 
@@ -93,6 +94,14 @@ async function writeLinked(text: string, ask: boolean): Promise<boolean> {
 }
 
 async function writeNative(built: Built, keep: number): Promise<boolean> {
+  if (isDesktopApp) {
+    try {
+      await desktopWriteBackup(built.name, built.text, keep);
+      return true;
+    } catch {
+      return false;
+    }
+  }
   try {
     const { Filesystem, Directory, Encoding } = await import('@capacitor/filesystem');
     const perm = await Filesystem.checkPermissions().catch(() => null);
@@ -127,11 +136,11 @@ async function writeNative(built: Built, keep: number): Promise<boolean> {
  */
 export async function silentBackup(key: CryptoKey | null): Promise<boolean> {
   // Nowhere to write without the user: skip the work of building the file.
-  if (!isNative && !(canLinkFile && (await kvGet<LinkedHandle>(HANDLE_KEY)))) return false;
+  if (!isApp && !(canLinkFile && (await kvGet<LinkedHandle>(HANDLE_KEY)))) return false;
   const built = await build(key);
   if (built === 'needs-unlock') return false;
   const settings = await loadSettings();
-  const ok = isNative ? await writeNative(built, settings.backup.keep) : await writeLinked(built.text, false);
+  const ok = isApp ? await writeNative(built, settings.backup.keep) : await writeLinked(built.text, false);
   if (ok) await markDone();
   return ok;
 }
@@ -143,11 +152,11 @@ export async function manualBackup(key: CryptoKey | null, opts: { forceShare?: b
   const built = await build(key);
   if (built === 'needs-unlock') return built;
   if (!opts.forceShare) {
-    if (!isNative && (await writeLinked(built.text, true))) {
+    if (!isApp && (await writeLinked(built.text, true))) {
       await markDone();
       return 'linked';
     }
-    if (isNative && (await writeNative(built, (await loadSettings()).backup.keep))) {
+    if (isApp && (await writeNative(built, (await loadSettings()).backup.keep))) {
       await markDone();
       return 'saved';
     }
